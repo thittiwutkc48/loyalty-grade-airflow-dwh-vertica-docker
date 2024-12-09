@@ -1,0 +1,34 @@
+[2024-12-04T06:50:46.083+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: load_data_to_vertica.insert_data manual__2024-12-04T06:50:43.923017+00:00 [queued]>
+[2024-12-04T06:50:46.087+0000] {taskinstance.py:1157} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: load_data_to_vertica.insert_data manual__2024-12-04T06:50:43.923017+00:00 [queued]>
+[2024-12-04T06:50:46.087+0000] {taskinstance.py:1359} INFO - Starting attempt 1 of 1
+[2024-12-04T06:50:46.093+0000] {taskinstance.py:1380} INFO - Executing <Task(PostgresOperator): insert_data> on 2024-12-04 06:50:43.923017+00:00
+[2024-12-04T06:50:46.095+0000] {standard_task_runner.py:57} INFO - Started process 215 to run task
+[2024-12-04T06:50:46.097+0000] {standard_task_runner.py:84} INFO - Running: ['***', 'tasks', 'run', 'load_data_to_vertica', 'insert_data', 'manual__2024-12-04T06:50:43.923017+00:00', '--job-id', '20', '--raw', '--subdir', 'DAGS_FOLDER/vertica_load_dag.py', '--cfg-path', '/tmp/tmpar22zfgn']
+[2024-12-04T06:50:46.098+0000] {standard_task_runner.py:85} INFO - Job 20: Subtask insert_data
+[2024-12-04T06:50:46.118+0000] {task_command.py:415} INFO - Running <TaskInstance: load_data_to_vertica.insert_data manual__2024-12-04T06:50:43.923017+00:00 [running]> on host c8f6c342c5cd
+[2024-12-04T06:50:46.152+0000] {taskinstance.py:1660} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='load_data_to_vertica' AIRFLOW_CTX_TASK_ID='insert_data' AIRFLOW_CTX_EXECUTION_DATE='2024-12-04T06:50:43.923017+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='manual__2024-12-04T06:50:43.923017+00:00'
+[2024-12-04T06:50:46.153+0000] {sql.py:274} INFO - Executing: 
+        INSERT INTO grade.example_table (id, data) VALUES (2, 'example');
+        
+[2024-12-04T06:50:46.156+0000] {base.py:73} INFO - Using connection ID 'vertica_conn' for task execution.
+[2024-12-04T06:50:46.160+0000] {base.py:73} INFO - Using connection ID 'vertica_conn' for task execution.
+[2024-12-04T06:50:46.328+0000] {sql.py:418} INFO - Running statement: 
+        INSERT INTO grade.example_table (id, data) VALUES (2, 'example');
+        , parameters: None
+[2024-12-04T06:50:46.399+0000] {taskinstance.py:1935} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/operators/sql.py", line 280, in execute
+    output = hook.run(
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/hooks/sql.py", line 392, in run
+    self._run_command(cur, sql_statement, parameters)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/common/sql/hooks/sql.py", line 423, in _run_command
+    cur.execute(sql_statement)
+psycopg2.errors.UniqueViolation: duplicate key value violates unique constraint "example_table_pkey"
+DETAIL:  Key (id)=(2) already exists.
+
+[2024-12-04T06:50:46.415+0000] {taskinstance.py:1398} INFO - Marking task as FAILED. dag_id=load_data_to_vertica, task_id=insert_data, execution_date=20241204T065043, start_date=20241204T065046, end_date=20241204T065046
+[2024-12-04T06:50:46.423+0000] {standard_task_runner.py:104} ERROR - Failed to execute job 20 for task insert_data (duplicate key value violates unique constraint "example_table_pkey"
+DETAIL:  Key (id)=(2) already exists.
+; 215)
+[2024-12-04T06:50:46.443+0000] {local_task_job_runner.py:228} INFO - Task exited with return code 1
+[2024-12-04T06:50:46.456+0000] {taskinstance.py:2776} INFO - 0 downstream tasks scheduled from follow-on schedule check
