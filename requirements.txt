@@ -1,0 +1,7 @@
+requests
+numpy==1.21.6
+pandas
+python-dotenv
+sendgrid
+apache-airflow-providers-google
+psycopg2-binary==2.9.10
