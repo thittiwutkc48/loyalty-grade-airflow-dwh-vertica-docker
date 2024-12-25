@@ -41,7 +41,7 @@ SELECT
     CURRENT_TIMESTAMP AS update_at,
     CURRENT_TIMESTAMP AS created_at  
 FROM 
-    {{ grading_schema }}.{{ single_staging_table }}  scs
+    {{ grading_schema }}.{{ staging_table }}  scs
 LEFT JOIN 
     (SELECT DISTINCT gradingaccountid FROM {{ grading_schema }}.{{ single_table }}) sc 
     ON scs.gradingaccountid = sc.gradingaccountid
@@ -95,7 +95,7 @@ SELECT
     TO_CHAR(CURRENT_DATE, 'YYYYMM') AS partition_month,
     CURRENT_TIMESTAMP AS update_at,
     CURRENT_TIMESTAMP AS created_at  
-FROM {{ grading_schema }}.{{ single_staging_table }} scs
+FROM {{ grading_schema }}.{{ staging_table }} scs
 LEFT JOIN (
     SELECT DISTINCT gradingaccountid 
     FROM {{ grading_schema }}.{{ single_table }}
