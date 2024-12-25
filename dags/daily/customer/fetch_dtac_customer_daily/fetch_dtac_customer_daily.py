@@ -3,8 +3,8 @@ from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.utils.dates import days_ago
 from jinja2 import Template
 from datetime import datetime, timedelta
-from daily.customer.fetch_true_customer_daily.default_config import default_config
-from daily.customer.fetch_true_customer_daily.sql.sql_query import (
+from daily.customer.fetch_dtac_customer_daily.default_config import default_config
+from daily.customer.fetch_dtac_customer_daily.sql.sql_query import (
     extract_to_staging,
     delete_duplicates_staging,
     delete_duplicates_single_staging,
@@ -22,9 +22,9 @@ default_args = {
 }
 
 with DAG(
-    dag_id="fetch_true_customer_daily",
+    dag_id="fetch_dtac_customer_daily",
     default_args=default_args,
-    description="Extract and process daily customer data from the TRUE system.",
+    description="Extract and process daily customer data from the DTAC system.",
     schedule_interval="0 3 * * *",
     start_date=datetime(2024, 1, 1),
     catchup=False,

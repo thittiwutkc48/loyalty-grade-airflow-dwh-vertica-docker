@@ -28,7 +28,7 @@ with DAG(
 ) as dag:
 
     download_gcs_task = PythonOperator(
-        task_id="download_gcs_employee_data",
+        task_id="download_gcs_task",
         python_callable=download_gcs_file,
         op_kwargs={
             "gcs_bucket_name": config['gcs_landing_bucket'],
@@ -38,7 +38,7 @@ with DAG(
     )
 
     process_employee_data_task = PythonOperator(
-        task_id="process_employee_data",
+        task_id="process_employee_data_task",
         python_callable=fetch_and_transform_employee_data,
         op_kwargs={
             "source_file_path": f"/tmp/{config['local_file_path']}",
@@ -47,6 +47,7 @@ with DAG(
             "conn_string": config['conn_string'],
             "percentage_threshold": config['percentage_threshold']
         },
+        trigger_rule="all_success", 
     )
 
     download_gcs_task >> process_employee_data_task

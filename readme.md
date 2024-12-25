@@ -1,6 +1,17 @@
 python -m venv airflow_venv
 
+# Uninstall the current version of Python (optional)
+brew uninstall python@3.13
 
+# Install a stable version of Python (for example, Python 3.11)
+brew install python@3.11
+
+# Create a new virtual environment with Python 3.11
+python3.11 -m venv venv
+source venv/bin/activate
+
+export PYTHONPATH=$(pwd)
+pytest test
 
 # Ensure core build tools and dependencies are in place
 xcode-select --install
@@ -21,6 +32,10 @@ pip install Pyrebase4
 
 
 pip install "apache-airflow==2.10.3" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.10.3/constraints-3.9.txt"
+
+pip install apache-airflow-providers-postgres
+
+pip install pytest pytest-cov
 
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;

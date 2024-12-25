@@ -18,6 +18,7 @@ WHERE
 delete_duplicates_single_staging = """
 DELETE FROM {{ grading_schema }}.{{ single_staging_table }} 
 WHERE 
+    operator_name = 'TRUE' AND
     partition_date = '{{ partition_date }}';
 """
 

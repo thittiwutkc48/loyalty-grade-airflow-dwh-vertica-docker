@@ -3,17 +3,37 @@ import os
 import pandas as pd
 from sqlalchemy import create_engine
 import shutil
+import logging
+from airflow.exceptions import AirflowSkipException
 
 def download_gcs_file(gcs_bucket_name, gcs_object_name, destination_file_path):
-    os.makedirs("/tmp/employee", exist_ok=True)
-    gcs_hook = GCSHook(gcp_conn_id="gcp_conn")
-    gcs_hook.download(
-        bucket_name=gcs_bucket_name,
-        object_name=gcs_object_name,
-        filename=destination_file_path,
-    )
-    print(f"File successfully downloaded to: {destination_file_path}")
-    print(f"GCS path was: gs://{gcs_bucket_name}/{gcs_object_name}")
+    """
+    Download a file from GCS. If the file does not exist, skip downstream tasks.
+    """
+    try:
+        os.makedirs(os.path.dirname(destination_file_path), exist_ok=True)
+        gcs_hook = GCSHook(gcp_conn_id="gcp_conn")
+
+        # Check if file exists in GCS
+        if not gcs_hook.exists(bucket_name=gcs_bucket_name, object_name=gcs_object_name):
+            logging.warning(f"File not found in GCS: gs://{gcs_bucket_name}/{gcs_object_name}")
+            raise AirflowSkipException(f"Skipping DAG run as file is missing in GCS: {gcs_object_name}")
+
+        # Download file
+        gcs_hook.download(
+            bucket_name=gcs_bucket_name,
+            object_name=gcs_object_name,
+            filename=destination_file_path,
+        )
+        logging.info(f"File successfully downloaded to: {destination_file_path}")
+
+    except AirflowSkipException as e:
+        logging.info(str(e))
+        raise  # Re-raise to let Airflow handle the skip
+
+    except Exception as e:
+        logging.error(f"Error downloading file: {str(e)}")
+        raise
 
 def fetch_and_transform_employee_data(source_file_path, grading_schema , table_name, conn_string , percentage_threshold):
    
@@ -37,34 +57,47 @@ def fetch_and_transform_employee_data(source_file_path, grading_schema , table_n
             "PositionCode": "position_name",
         }, inplace=True)
 
+        df["national_id"] = df["national_id"] .astype(str)
+        df["employee_id"] = df["employee_id"] .astype(str)
+        df["eng_firstname"] = df["eng_firstname"] .astype(str)
+        df["eng_lastname"] = df["eng_lastname"] .astype(str)
+        df["thai_firstname"] = df["thai_firstname"] .astype(str)
+        df["thai_lastname"] = df["thai_lastname"] .astype(str)
+        df["company_name"] = df["company_name"] .astype(str)
+        df["position_name"] = df["position_name"].astype(str)
         df["create_at"] =  pd.Timestamp.now()
         df["partition_date"] = pd.Timestamp.now().strftime("%Y-%m-%d")
 
         new_count = len(df)
+        
   
         if existing_count > 0:
             percentage_diff = abs(new_count - existing_count) / existing_count
-            print(
+            logging.info(
                 f"Existing rows in database : {existing_count}, Rows in new data file: {new_count}, "
                 f"Percentage difference: {percentage_diff * 100:.2f}%"
             )
             if percentage_diff > float(percentage_threshold):
-                print(f"Difference exceeds {float(percentage_threshold)*100}%. Data will not be appended.")
+                logging.info(f"Difference exceeds {float(percentage_threshold)*100}%. Data will not be appended.")
                 return
+            
+        with engine.connect() as conn:
+            conn.execute(f"TRUNCATE TABLE {grading_schema}.{table_name}")
+        logging.info(f"Existing data in {table_name} has been truncated.")
 
         df.to_sql(
             table_name,
             con=engine,
             schema=grading_schema,
-            if_exists="replace",
+            if_exists="append",
             index=False
         )
 
         shutil.rmtree("/tmp/employee")
-        print("Data successfully loaded into EMPLOYEE table.")
+        logging.info("Data successfully loaded into EMPLOYEE table.")
 
     except Exception as e:
-        print(f"Error during processing: {e}")
+        logging.info(f"Error during processing: {e}")
         raise
     
 

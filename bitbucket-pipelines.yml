@@ -1,0 +1,20 @@
+image: python:3.11
+
+pipelines:
+  default:
+    - step:
+        name: Install Dependencies and Run Tests
+        caches:
+          - pip
+        script:
+          # Install dependencies
+          - echo "Installing dependencies..."
+          - pip install --upgrade pip
+          - pip install -r requirements.txt
+
+          # Run pytest
+          - echo "Running tests..."
+          - pytest --disable-warnings --cov=dags --cov-report=xml --cov-report=html
+
+        artifacts:
+          - htmlcov/**  # Save the coverage report as an artifact for inspection
