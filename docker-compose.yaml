@@ -57,8 +57,9 @@ services:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
-      - ./sql:/opt/airflow/sql          # Mount the sql directory
-      - ./keys:/opt/airflow/keys  # Mount GCP service account key
+      - ./sql:/opt/airflow/sql          
+      - ./keys:/opt/airflow/keys
+      - ./mock_data:/opt/airflow/mock_data
     command: >
       bash -c "airflow db upgrade && airflow scheduler"
 
@@ -76,8 +77,9 @@ services:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
-      - ./sql:/opt/airflow/sql          # Mount the sql directory
-      - ./keys:/opt/airflow/keys  # Mount GCP service account key
+      - ./sql:/opt/airflow/sql         
+      - ./keys:/opt/airflow/keys  
+      - ./mock_data:/opt/airflow/mock_data
     command: >
       bash -c "airflow worker"
 

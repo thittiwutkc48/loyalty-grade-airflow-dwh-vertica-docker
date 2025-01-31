@@ -43,6 +43,8 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 
 
+(venv) thittiwutnoobunrak@ThittiwutNoobunrak airflow-docker-vertica % pytest --cov=test --cov-report=term-missing
+
 CREATE TABLE grade.true_customer_staging (
     notificationid varchar(60) NULL,
     eventbegintime varchar(60) NULL,

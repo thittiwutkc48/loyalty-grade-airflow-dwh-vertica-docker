@@ -6,9 +6,10 @@ from jinja2 import Template
 from datetime import datetime, timedelta
 from daily.customer.fetch_single_customer_merge_daily.default_config import default_config
 from daily.customer.fetch_single_customer_merge_daily.sql.sql_query import (
-    new_existing_to_single,
-    existing_update_to_single,
-    emp_new_existing_to_single
+    upsert_new_and_existing_to_single,
+    emp_new_existing_to_single,
+    update_emp_quit_single,
+    update_emp_info_to_single,
 )
 # from plugins.sengrid.sendgrid_send_email import success_callback, failure_callback
 
@@ -76,23 +77,30 @@ with DAG(
         dag=dag,
     )
 
-    new_existing_to_single_task = PostgresOperator(
-            task_id="new_existing_to_single_task",
+    upsert_new_and_existing_to_single_task = PostgresOperator(
+            task_id="upsert_new_and_existing_to_single_task",
             postgres_conn_id="postgres_conn",
-            sql=Template(new_existing_to_single).render(sql_context),
+            sql=Template(upsert_new_and_existing_to_single).render(sql_context),
         )
     
-    existing_update_to_single_task = PostgresOperator(
-            task_id="existing_update_to_single_task",
-            postgres_conn_id="postgres_conn",
-            sql=Template(existing_update_to_single).render(sql_context),
-        )
-
     emp_new_existing_to_single_task = PostgresOperator(
             task_id="emp_new_existing_to_single_task",
             postgres_conn_id="postgres_conn",
             sql=Template(emp_new_existing_to_single).render(sql_context),
         )
+    
+    update_emp_quit_single_task = PostgresOperator(
+            task_id="update_emp_quit_single_task",
+            postgres_conn_id="postgres_conn",
+            sql=Template(update_emp_quit_single).render(sql_context),
+        )
+    
+    update_emp_info_to_single_task = PostgresOperator(
+            task_id="update_emp_info_to_single_task",
+            postgres_conn_id="postgres_conn",
+            sql=Template(update_emp_info_to_single).render(sql_context),
+        )
 
-    wait_for_fetch_true_customer_daily_task >> wait_for_fetch_dtac_customer_daily_task >> wait_for_fetch_true_dtac_employee_daily_task >> new_existing_to_single_task >> existing_update_to_single_task >> emp_new_existing_to_single_task
 
+    # wait_for_fetch_true_customer_daily_task >> wait_for_fetch_dtac_customer_daily_task >> wait_for_fetch_true_dtac_employee_daily_task >> 
+    upsert_new_and_existing_to_single_task >> emp_new_existing_to_single_task >> update_emp_quit_single_task >> update_emp_info_to_single_task
