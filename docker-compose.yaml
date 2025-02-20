@@ -1,6 +1,22 @@
 version: "3.7"
 
 services:
+  vertica:
+    image: vertica/vertica-ce:latest
+    container_name: vertica
+    environment:
+      VERTICA_PASSWORD: my_secure_password  # Replace with your password
+    ports:
+      - "5433:5433"  # Expose Vertica's default port
+    volumes:
+      - vertica_data:/data  # Persist data across container restarts
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "vsql -U dbadmin -w my_secure_password -c 'SELECT 1;'"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   postgres:
     image: postgres:15
     container_name: postgres
@@ -36,10 +52,12 @@ services:
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
       - ./keys:/opt/airflow/keys
+      - ./requirements.txt:/opt/airflow/requirements.txt 
     ports:
       - "8080:8080"
     command: >
-      bash -c "airflow db upgrade &&
+      bash -c "pip install -r /opt/airflow/requirements.txt &&
+               airflow db upgrade &&
                airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com &&
                airflow webserver"
 
@@ -60,8 +78,11 @@ services:
       - ./sql:/opt/airflow/sql          
       - ./keys:/opt/airflow/keys
       - ./mock_data:/opt/airflow/mock_data
+      - ./requirements.txt:/opt/airflow/requirements.txt
     command: >
-      bash -c "airflow db upgrade && airflow scheduler"
+      bash -c "pip install -r /opt/airflow/requirements.txt &&
+               airflow db upgrade &&
+               airflow scheduler"
 
   airflow-worker:
     image: apache/airflow:2.7.1
@@ -80,8 +101,12 @@ services:
       - ./sql:/opt/airflow/sql         
       - ./keys:/opt/airflow/keys  
       - ./mock_data:/opt/airflow/mock_data
+      - ./requirements.txt:/opt/airflow/requirements.txt 
     command: >
-      bash -c "airflow worker"
+      bash -c "pip install -r /opt/airflow/requirements.txt &&
+               airflow worker"
 
 volumes:
   postgres_data:
+  vertica_data:
+
