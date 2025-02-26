@@ -1,4 +1,4 @@
-CREATE TABLE stg_true_subscribers_product (
+CREATE TABLE CLYMAPPO.stg_true_subscribers_product (
     product_id VARCHAR(100), 
     product_line VARCHAR(100), 
     idx INT, 
@@ -18,7 +18,7 @@ UNSEGMENTED ALL NODES
 PARTITION BY partition_date;
 
 
-CREATE PROJECTION stg_true_subscribers_product_super
+CREATE PROJECTION CLYMAPPO.stg_true_subscribers_product_super
 (
     product_id, 
     product_line, 

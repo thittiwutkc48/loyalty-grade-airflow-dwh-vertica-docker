@@ -3,7 +3,7 @@ CREATE TABLE CLYMAPPO.stg_true_topping_recurring (
     request_id VARCHAR(255),
     topping_id VARCHAR(255),
     chain_id INT,
-    event_begin_time VARCHAR(255),
+    event_begin_time TIMESTAMP,
     msisdn VARCHAR(20),
     imsi VARCHAR(255),
     account_type VARCHAR(20),

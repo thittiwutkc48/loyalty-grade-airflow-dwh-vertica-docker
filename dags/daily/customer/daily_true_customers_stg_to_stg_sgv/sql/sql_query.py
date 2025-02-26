@@ -65,6 +65,13 @@ WHERE
     AND b.row_key IS NULL;
 """
 
+delete_duplicates_single_staging = """
+DELETE FROM {{ grading_schema }}.{{ single_staging_table }} 
+WHERE 
+    partition_date = '{{ partition_date }}'
+    AND operator_name = 'TRUE';
+"""
+
 transform_to_single_staging = """
 INSERT INTO {{ grading_schema }}.{{ single_staging_table }} 
 WITH rank_customers AS (

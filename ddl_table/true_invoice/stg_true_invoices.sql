@@ -1,8 +1,8 @@
 
 CREATE TABLE CLYMAPPO.stg_true_invoices (
-    row_key varchar(60)
+    row_key varchar(60),
 	notification_id varchar(100) ,
-	event_begin_time varchar(100) ,
+	event_begin_time TIMESTAMP ,
 	billing_seq_no varchar(100) ,
 	ban varchar(50) ,
     account_id varchar(50),
