@@ -55,11 +55,11 @@ with DAG(
         sql=Template(validate_json).render(sql_context),
     )
     
-    delete_duplicates_single_view_task = VerticaOperator(
-        task_id="delete_duplicates_single_view_task",
-        vertica_conn_id="vertica_conn",
-        sql=Template(delete_duplicates_single_view).render(sql_context),
-    )
+    # delete_duplicates_single_view_task = VerticaOperator(
+    #     task_id="delete_duplicates_single_view_task",
+    #     vertica_conn_id="vertica_conn",
+    #     sql=Template(delete_duplicates_single_view).render(sql_context),
+    # )
 
     transform_to_single_view_task = VerticaOperator(
         task_id="transform_to_single_view_task",
@@ -67,4 +67,4 @@ with DAG(
         sql=Template(transform_to_single_view).render(sql_context),
     )
 
-    delete_duplicates_staging_task >> extract_to_staging_task >> validate_json_task >> delete_duplicates_single_view_task >> transform_to_single_view_task
+    delete_duplicates_staging_task >> extract_to_staging_task >> validate_json_task >> transform_to_single_view_task

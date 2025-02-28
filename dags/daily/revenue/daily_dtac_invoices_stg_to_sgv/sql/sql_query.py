@@ -22,9 +22,9 @@ SELECT
     acct_id AS account_id,
     NULL AS customer_no, 
     CASE 
-        WHEN LENGTH(pri_identity) > 0 AND pri_identity IS NOT NULL
-        THEN VoltageSecureAccess(pri_identity USING PARAMETERS format='AlphaNumeric', config_dfs_path='/voltagesecure/conf')
-        ELSE pri_identity
+      WHEN LENGTH(pri_identity) > 1 AND pri_identity IS NOT NULL
+      THEN {{ function_schema }}VoltageSecureAccess(pri_identity USING PARAMETERS format='AlphaNumeric', config_dfs_path='/voltagesecure/conf')
+      ELSE pri_identity
     END AS product_id,
     invoice_amt AS invoice_amount,
     tax_amt AS tax_amount,

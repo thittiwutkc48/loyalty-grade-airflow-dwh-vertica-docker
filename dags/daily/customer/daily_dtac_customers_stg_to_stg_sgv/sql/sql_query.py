@@ -7,12 +7,12 @@ WHERE
 extract_to_staging = """
 INSERT INTO {{ grading_schema }}.{{ staging_table }} 
 SELECT 
-    file_id,
+ file_id,
     file_name,
     last_chng_dttm,
     CASE 
-        WHEN LENGTH(id_numb) > 0 AND id_numb IS NOT NULL
-        THEN UPPER(VoltageSecureAccess(id_numb USING PARAMETERS format='PREDEFINED::UNICODE_BASE32K', config_dfs_path='/voltagesecure/conf')) 
+        WHEN LENGTH(id_numb) > 1 AND id_numb IS NOT NULL
+        THEN UPPER({{ function_schema }}VoltageSecureAccess(id_numb USING PARAMETERS format='AlphaNumeric', config_dfs_path='/voltagesecure/conf'))
         ELSE UPPER(id_numb)
     END AS identifier_no,
     id_type,
@@ -34,13 +34,13 @@ SELECT
         ELSE NULL 
     END AS customer_type,
     CASE 
-        WHEN LENGTH(frst_name) > 0 AND frst_name IS NOT NULL
-        THEN UPPER(VoltageSecureAccess(frst_name USING PARAMETERS format='PREDEFINED::UNICODE_BASE32K', config_dfs_path='/voltagesecure/conf')) 
+        WHEN LENGTH(frst_name) > 1  AND frst_name IS NOT NULL
+        THEN {{ function_schema }}VoltageSecureAccess(frst_name USING PARAMETERS format='PREDEFINED::UNICODE_BASE32K', config_dfs_path='/voltagesecure/conf') 
         ELSE frst_name
     END AS first_name,
     CASE 
-        WHEN LENGTH(last_name) > 0 AND last_name IS NOT NULL
-        THEN UPPER(VoltageSecureAccess(last_name USING PARAMETERS format='PREDEFINED::UNICODE_BASE32K', config_dfs_path='/voltagesecure/conf')) 
+        WHEN LENGTH(last_name) > 1 AND last_name IS NOT NULL
+        THEN {{ function_schema }}VoltageSecureAccess(last_name USING PARAMETERS format='PREDEFINED::UNICODE_BASE32K', config_dfs_path='/voltagesecure/conf')
         ELSE last_name
     END AS last_name,
     titl AS title,
@@ -51,8 +51,8 @@ SELECT
         ELSE NULL
     END AS gender,
     CASE 
-        WHEN LENGTH(emal_addr) > 0 AND emal_addr IS NOT NULL
-        THEN UPPER(VoltageSecureAccess(emal_addr USING PARAMETERS format='PREDEFINED::UNICODE_BASE32K', config_dfs_path='/voltagesecure/conf')) 
+        WHEN LENGTH(emal_addr) >1 AND emal_addr IS NOT NULL AND emal_addr NOT IN ( '','@' )
+        THEN {{ function_schema }}VoltageSecureAccess(emal_addr USING PARAMETERS format='AlphaNumeric', config_dfs_path='/voltagesecure/conf') 
         ELSE emal_addr
     END AS email_address,
     TO_CHAR(file_date, 'YYYY-MM-DD')::DATE AS transaction_date,
