@@ -77,7 +77,7 @@ INSERT INTO {{ grading_schema }}.{{ single_staging_table }}
 WITH rank_customers AS (
     SELECT 
         *,
-        ROW_NUMBER() OVER (PARTITION BY id_num ORDER BY event_begin_time DESC) AS row_rank
+        ROW_NUMBER() OVER (PARTITION BY UPPER(id_num) ORDER BY event_begin_time DESC) AS row_rank
     FROM 
         {{ grading_schema }}.{{ staging_table }} 
     WHERE 

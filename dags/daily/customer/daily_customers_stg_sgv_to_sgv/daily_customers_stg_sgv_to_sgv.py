@@ -38,31 +38,31 @@ with DAG(
     
     sql_context = { **default_config }
     
-    wait_for_daily_dtac_customers_stg_to_stg_sgv = ExternalTaskSensor(
-        task_id='wait_for_daily_dtac_customers_stg_to_stg_sgv',
-        external_dag_id='daily_dtac_customers_stg_to_stg_sgv',
-        external_task_id='transform_to_single_staging_task',
-        allowed_states=['success'],
-        failed_states=['failed'],
-        skipped_states=['skipped'],
-        poke_interval=60,
-        timeout=3600,
-        mode='poke',
-        dag=dag,
-    )
+    # wait_for_daily_dtac_customers_stg_to_stg_sgv = ExternalTaskSensor(
+    #     task_id='wait_for_daily_dtac_customers_stg_to_stg_sgv',
+    #     external_dag_id='daily_dtac_customers_stg_to_stg_sgv',
+    #     external_task_id='transform_to_single_staging_task',
+    #     allowed_states=['success'],
+    #     failed_states=['failed'],
+    #     skipped_states=['skipped'],
+    #     poke_interval=60,
+    #     timeout=3600,
+    #     mode='poke',
+    #     dag=dag,
+    # )
 
-    wait_for_daily_true_customers_stg_to_stg_sgv = ExternalTaskSensor(
-        task_id='wait_for_daily_true_customers_stg_to_stg_sgv',
-        external_dag_id='daily_true_customers_stg_to_stg_sgv',
-        external_task_id='transform_to_single_staging_task',
-        allowed_states=['success'],
-        failed_states=['failed'],
-        skipped_states=['skipped'],
-        poke_interval=60,
-        timeout=3600,
-        mode='poke',
-        dag=dag,
-    )
+    # wait_for_daily_true_customers_stg_to_stg_sgv = ExternalTaskSensor(
+    #     task_id='wait_for_daily_true_customers_stg_to_stg_sgv',
+    #     external_dag_id='daily_true_customers_stg_to_stg_sgv',
+    #     external_task_id='transform_to_single_staging_task',
+    #     allowed_states=['success'],
+    #     failed_states=['failed'],
+    #     skipped_states=['skipped'],
+    #     poke_interval=60,
+    #     timeout=3600,
+    #     mode='poke',
+    #     dag=dag,
+    # )
 
     transform_dtac_to_dtac_single_task = VerticaOperator(
         task_id="transform_dtac_to_dtac_single_task",
@@ -82,4 +82,6 @@ with DAG(
         sql=Template(create_view_true_dtac_single).render(sql_context),
     )
 
-    wait_for_daily_dtac_customers_stg_to_stg_sgv >> wait_for_daily_true_customers_stg_to_stg_sgv >> transform_dtac_to_dtac_single_task >> transform_true_to_true_single_task >> create_view_true_dtac_single_task
+    # wait_for_daily_dtac_customers_stg_to_stg_sgv >> wait_for_daily_true_customers_stg_to_stg_sgv >> transform_dtac_to_dtac_single_task >> transform_true_to_true_single_task >> create_view_true_dtac_single_task
+    transform_dtac_to_dtac_single_task >> transform_true_to_true_single_task >> create_view_true_dtac_single_task
+

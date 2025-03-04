@@ -7,8 +7,9 @@ default_config = {
     "source_error_table": Variable.get("DWH_TRUE_SUBSCRIBER_ERROR_TABLE"),
     "staging_table": Variable.get("TRUE_STAGING_SUBSCRIBER_TABLE"),
     "staging_product_table": Variable.get("TRUE_STAGING_SUBSCRIBER_PRODUCT_TABLE"),
+    "single_staging_table": Variable.get("SINGLE_VIEW_STAGING_SUBSCRIBER_TABLE"),
     "single_view_table": Variable.get("SINGLE_VIEW_SUBSCRIBER_TABLE"),
     "single_view_history_table": Variable.get("SINGLE_VIEW_SUBSCRIBER_HISTORY_TABLE"),
-    "temp_product_table": "temp_product_ids",
+    "temp_product_table": "vw_temp_product_id_inactive",
     "partition_date": "{{ dag_run.conf.get('partition_date', (execution_date - macros.timedelta(days=1)).strftime('%Y-%m-%d')) }}"
 }
