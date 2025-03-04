@@ -126,3 +126,4 @@ with DAG(
 
     delete_duplicates_staging_task >> extract_to_staging_task >> validate_json_task >> extract_to_staging_product_task >> delete_duplicates_single_staging_task >> transform_inactive_to_single_staging_task >> transform_non_inactive_to_single_staging_task >> transform_inactive_to_single_view_task >> create_view_temp_product_id_inactive_task >> update_product_id_in_temp_inactive_task >> insert_to_product_history_task >> delete_inactive_in_single_view_task >> transform_non_inactive_to_single_view_task
 
+
