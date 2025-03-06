@@ -170,6 +170,7 @@ SELECT
     COUNT(*) AS product_count
 FROM {{ grading_schema }}.{{ single_view_table }}
 WHERE product_status = 'INACTIVE'
+        AND operator_name = 'TRUE'
 GROUP BY product_id, partition_date
 HAVING COUNT(*) > 1;
 """
@@ -183,18 +184,20 @@ WHERE product_id IN (SELECT product_id FROM {{ grading_schema }}.{{ temp_product
 insert_to_product_history = """
 INSERT INTO {{ grading_schema }}.{{ single_view_history_table }}
 SELECT * FROM {{ grading_schema }}.{{ single_view_table }}
-WHERE product_status = 'INACTIVE' ;
+WHERE product_status = 'INACTIVE'
+    AND operator_name = 'TRUE';
 """
 
 delete_inactive_in_single_view = """
 DELETE FROM {{ grading_schema }}.{{ single_view_table }}
-WHERE product_status = 'INACTIVE' ;
+WHERE product_status = 'INACTIVE' 
+    AND operator_name = 'TRUE';
 """
 
 delete_duplicates_single_staging = """
 DELETE FROM {{ grading_schema }}.{{ single_staging_table }} 
-WHERE 
-    partition_date = '{{ partition_date }}';
+WHERE partition_date = '{{ partition_date }}'
+    AND operator_name = 'TRUE';
 """
 
 transform_inactive_to_single_staging = """
@@ -419,6 +422,7 @@ USING (
     SELECT * 
     FROM {{ grading_schema }}.{{ single_staging_table }}
     WHERE partition_date = '{{ partition_date }}'
+        AND operator_name = 'TRUE'
         AND product_status = 'INACTIVE'
 ) AS source
 ON 
@@ -426,6 +430,7 @@ ON
     AND target.identifier_no = source.identifier_no
     AND target.crm_integration_id = source.crm_integration_id
     AND target.product_id = source.product_id
+    AND target.operator_name = source.operator_name
 WHEN MATCHED THEN 
     UPDATE SET 
         customer_type = source.customer_type,
@@ -461,7 +466,6 @@ WHEN MATCHED THEN
         subscriber_status = source.subscriber_status,
         subscriber_start_date = source.subscriber_start_date,
         subscriber_end_date = source.subscriber_end_date,
-        operator_name = source.operator_name,
         update_at = NOW(),
         transaction_date = source.transaction_date,
         partition_date = source.partition_date,
@@ -570,10 +574,12 @@ USING (
     SELECT * 
     FROM {{ grading_schema }}.{{ single_staging_table }}
     WHERE partition_date = '{{ partition_date }}'
+        AND operator_name = 'TRUE'
         AND product_status = 'ACTIVE'
 ) AS source
 ON 
     target.product_id = source.product_id
+    AND target.operator_name = source.operator_name
 WHEN MATCHED THEN 
     UPDATE SET
         grading_account_id = source.grading_account_id,
@@ -612,7 +618,6 @@ WHEN MATCHED THEN
         subscriber_status = source.subscriber_status,
         subscriber_start_date = source.subscriber_start_date,
         subscriber_end_date = source.subscriber_end_date,
-        operator_name = source.operator_name,
         update_at = NOW(),
         transaction_date = source.transaction_date,
         partition_date = source.partition_date,
