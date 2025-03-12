@@ -247,7 +247,7 @@ WITH ranked_subscribers AS (
             rn_sub.golden_id,
             rn_sub.product_id,
             rn_sub.product_name,
-            NULL AS product_name_desc,
+            rn_sub.product_name_desc,
             UPPER(rn_sub.product_status) AS product_status,
             rn_sub.product_line,
             CASE 
@@ -355,7 +355,7 @@ WITH ranked_subscribers AS (
             rn_sub.golden_id,
             rn_sub.product_id,
             rn_sub.product_name,
-            NULL AS product_name_desc,
+            rn_sub.product_name_desc,
             UPPER(rn_sub.product_status) AS product_status,
             rn_sub.product_line,
             CASE 

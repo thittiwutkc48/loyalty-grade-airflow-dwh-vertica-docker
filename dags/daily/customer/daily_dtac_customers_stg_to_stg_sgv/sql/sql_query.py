@@ -7,7 +7,7 @@ WHERE
 extract_to_staging = """
 INSERT INTO {{ grading_schema }}.{{ staging_table }} 
 SELECT 
- file_id,
+    file_id,
     file_name,
     last_chng_dttm,
     CASE 
@@ -52,7 +52,7 @@ SELECT
     END AS gender,
     CASE 
         WHEN LENGTH(emal_addr) >1 AND emal_addr IS NOT NULL AND emal_addr NOT IN ( '','@' )
-        THEN {{ function_schema }}VoltageSecureAccess(emal_addr USING PARAMETERS format='AlphaNumeric', config_dfs_path='/voltagesecure/conf') 
+        THEN {{ function_schema }}.VoltageSecureAccess(emal_addr USING PARAMETERS format='AlphaNumeric', config_dfs_path='/voltagesecure/conf') 
         ELSE emal_addr
     END AS email_address,
     TO_CHAR(file_date, 'YYYY-MM-DD')::DATE AS transaction_date,
