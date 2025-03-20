@@ -72,3 +72,7 @@ logs/scheduler/latest
 dags/__pycache__/vertica_load_dag.cpython-38.pyc
 logs/dag_processor_manager/dag_processor_manager.log
 logs/scheduler/latest
+logs/dag_processor_manager/dag_processor_manager.log
+logs/scheduler/latest
+logs/dag_processor_manager/dag_processor_manager.log
+logs/scheduler/latest
