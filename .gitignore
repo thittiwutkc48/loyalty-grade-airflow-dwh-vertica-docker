@@ -24,7 +24,6 @@ logs/scheduler
 # Ignore Docker-related files (if using Docker)
 docker-compose.override.yml
 *.swp
-Dockerfile
 
 # Ignore Airflow DAG files that are generated or modified at runtime
 .dags/
